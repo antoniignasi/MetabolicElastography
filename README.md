@@ -259,67 +259,88 @@ The repository documents validation decisions so that reported performance is no
 ```text
 MetaElasto/
 ├── README.md
-├── notebooks/
-│   ├── 01_main_analysis.ipynb
-│   └── exploratory/
-├── src/
-├── data/
-│   └── README.md
-├── results/
-├── figures/
-├── docs/
-└── requirements.txt
+├── Code_Report.pdf
+└── notebooks/
+    ├── 00_full_analysis.ipynb
+    ├── 01_preprocessing.ipynb
+    ├── 02_descriptive_audit.ipynb
+    ├── 03_signal_quality_control.ipynb
+    ├── 04_statistical_analysis.ipynb
+    ├── 05_machine_learning.ipynb
+    └── 06_deep_learning.ipynb
 ```
 
-## Folder description
+## Repository contents
+
+### `README.md`
+
+Provides a general description of the project, its methodological scope, the organisation of the repository, data availability restrictions and reproducibility notes.
+
+### `Code_Report.pdf`
+
+Contains a static exported version of the computational workflow.
+
+This file is included as supplementary documentation for review purposes. It provides a complete view of the code and analytical process in PDF format, while the notebooks in the `notebooks/` folder provide a more navigable version divided into thematic blocks.
 
 ### `notebooks/`
 
 Contains the notebook-based implementation of the analytical workflow.
 
-The main notebook documents the full sequence of preprocessing, harmonisation, quality control, feature construction, statistical analysis, clustering and modelling.
+The original analysis was developed as a single notebook and then divided into thematic notebooks to improve readability, traceability and reviewability. Each notebook corresponds to one methodological block of the thesis. The complete notebook is also preserved to show the full analytical workflow in a single file.
 
-Exploratory notebooks may contain additional tests, sensitivity analyses, intermediate experiments or methodological checks that supported decisions in the thesis.
+#### `00_full_analysis.ipynb`
 
-### `src/`
+Contains the complete analytical workflow.
 
-Contains reusable Python functions and scripts extracted from the notebooks.
+This notebook provides the full sequence of the project, from data loading and harmonisation to quality control, statistical analysis, machine learning and deep-learning experiments. It is kept as a transparent record of the full computational process.
 
-This folder may include code for
+#### `01_preprocessing.ipynb`
 
-- file parsing
-- signal loading
-- metadata cleaning
-- clinical data harmonisation
-- quality-control metrics
-- feature extraction
-- plotting
-- statistical analysis
-- model evaluation
+Contains the preprocessing and data-harmonisation workflow.
 
-### `data/`
+This notebook reads and organises the raw torsional wave elastography signal files, parses old-code and new-code acquisition formats, extracts metadata from filenames, assigns patient and timepoint information, and links signal-level records with elastograph metadata and clinical tables.
 
-The original data are not included in this repository.
+The main output of this block is the harmonised acquisition-level dataset used in the rest of the analysis.
 
-This folder may contain only placeholder files or documentation describing the expected input structure. Raw clinical data, identifiable information and protected research data must not be uploaded.
+#### `02_descriptive_audit.ipynb`
 
-### `results/`
+Contains the descriptive audit of the harmonised dataset.
 
-Contains non-sensitive summary outputs generated during the analysis.
+This notebook summarises the structure of the data by protocol, patient, timepoint and anatomical site. It also evaluates frequency coverage, acquisition counts, repeated-measurement structure and basic signal properties before applying any exclusion criteria.
 
-This may include aggregated tables, model summaries, quality-control summaries and other outputs that do not expose confidential information.
+The purpose of this block is to understand the dataset structure and identify potential inconsistencies before formal quality control.
 
-### `figures/`
+#### `03_signal_quality_control.ipynb`
 
-Contains non-sensitive figures generated for exploratory analysis, reporting or inclusion in the thesis.
+Contains the signal-quality assessment and conservative filtering strategy.
 
-Figures should be checked before upload to ensure that they do not contain identifiable information or protected data.
+This notebook computes acquisition-level quality metrics from the frequency-resolved waveforms and classifies acquisitions into `keep`, `review` and `exclude` categories.
 
-### `docs/`
+The quality-control strategy is intentionally conservative. Its goal is to identify clearly problematic acquisitions while preserving borderline cases for later sensitivity analysis.
 
-Contains methodological notes, supplementary documentation and additional explanations related to the analytical workflow.
+#### `04_statistical_analysis.ipynb`
 
-This folder can also include notes on variable definitions, endpoint construction, protocol differences and interpretation of results.
+Contains the main statistical and exploratory analyses.
+
+This notebook studies the distribution of mechanical, signal-derived and clinical variables. It includes descriptive statistics, group comparisons, correlation analyses, missing-data exploration, protocol-aware summaries and exploratory multivariate analyses such as PCA and clustering.
+
+The objective of this block is to evaluate whether the extracted mechanical descriptors show interpretable patterns in relation to anatomical site, protocol and cardiometabolic variables.
+
+#### `05_machine_learning.ipynb`
+
+Contains the classical machine-learning analyses.
+
+This notebook compares interpretable supervised models using different feature blocks and target definitions. The analysis focuses on internal validation, protocol-aware modelling, performance comparison and the stability of results.
+
+The aim is not only to maximise predictive performance, but to assess whether the available descriptors provide robust and interpretable information for cardiometabolic classification tasks.
+
+#### `06_deep_learning.ipynb`
+
+Contains exploratory deep-learning analyses based on waveform information.
+
+This notebook evaluates whether raw or minimally processed torsional wave elastography signals contain useful temporal information that may not be fully captured by handcrafted descriptors.
+
+These models are treated as exploratory and are interpreted cautiously, especially because of sample-size limitations, repeated measurements and the need to avoid information leakage.
 
 ## Data availability
 
@@ -329,13 +350,13 @@ The data are excluded from this repository because they may contain sensitive cl
 
 The repository is intended to document the analytical workflow without exposing confidential information.
 
-Where possible, the expected structure of the input data is documented so that the code can be inspected and understood even when the protected dataset is not available.
+Where possible, the notebooks preserve the methodological structure of the workflow so that the code can be inspected and understood even when the protected dataset is not available.
 
 ## Reproducibility
 
-The notebooks and scripts are provided for methodological transparency.
+The notebooks are provided for methodological transparency.
 
-Some parts of the workflow may not run without access to the original protected dataset. However, the repository documents the main analytical decisions, preprocessing steps, quality-control procedures, feature-construction logic, statistical analyses and modelling comparisons used in the thesis.
+Some parts of the workflow may not run without access to the original protected dataset. However, the repository documents the main analytical decisions, preprocessing steps, quality-control procedures, statistical analyses and modelling comparisons used in the thesis.
 
 The workflow is designed to be reproducible under the same data-access conditions.
 
@@ -345,13 +366,11 @@ This repository is under active development.
 
 The current priorities are
 
-- cleaning the main notebook
-- documenting the code structure
-- separating reusable functions from exploratory code
+- cleaning the notebooks
 - removing local paths and private information
-- adding a complete `requirements.txt`
-- documenting the expected data structure
-- ensuring that sensitive data are not uploaded
+- checking that no sensitive data are uploaded
+- improving the documentation of each analytical block
+- adding a complete `requirements.txt` file if needed
 - aligning the repository with the final version of the thesis
 
 ## Requirements
@@ -372,7 +391,7 @@ jupyter
 
 Additional dependencies may be required for specific modelling steps, deep-learning experiments or notebook execution.
 
-A complete `requirements.txt` file should be added to document the final computational environment.
+A complete `requirements.txt` file may be added to document the final computational environment.
 
 ## How to use this repository
 
@@ -383,23 +402,27 @@ git clone https://github.com/<username>/MetaElasto.git
 cd MetaElasto
 ```
 
-Create and activate a Python environment.
+Open the notebook folder.
 
 ```bash
-python -m venv .venv
-source .venv/bin/activate
+cd notebooks
 ```
 
-Install dependencies.
+Open the complete workflow.
 
 ```bash
-pip install -r requirements.txt
+jupyter notebook 00_full_analysis.ipynb
 ```
 
-Open the main notebook.
+Alternatively, open each analytical block separately.
 
 ```bash
-jupyter notebook notebooks/01_main_analysis.ipynb
+jupyter notebook 01_preprocessing.ipynb
+jupyter notebook 02_descriptive_audit.ipynb
+jupyter notebook 03_signal_quality_control.ipynb
+jupyter notebook 04_statistical_analysis.ipynb
+jupyter notebook 05_machine_learning.ipynb
+jupyter notebook 06_deep_learning.ipynb
 ```
 
 Full execution requires access to the protected dataset and the correct local configuration of input paths.
