@@ -1,263 +1,282 @@
-# MetaElasto
+# MetabolicElastography
 
-MetaElasto is the code repository associated with a Master's Thesis project on the integration of torsional wave elastography, viscoelastic modelling and computational analysis for the study of metabolic and cardiometabolic alterations.
+MetabolicElastography is the code repository associated with the Master's Thesis entitled *Integration of torsional wave elastography and computational models for the exploratory assessment of cardiometabolic alterations*.
 
-The project focuses on the analysis of torsional wave elastography measurements acquired in superficial tissues, with special attention to subcutaneous adipose tissue, frequency-resolved signal information, protocol-dependent variability, missing data patterns and interpretable modelling strategies.
+The project focuses on the computational analysis of torsional wave elastography (TWE) measurements acquired at superficial tissue sites, with special attention to subcutaneous adipose tissue. The workflow preserves frequency-resolved signal information, integrates mechanical and viscoelastic descriptors with clinical and anthropometric variables, and explicitly considers protocol-dependent variability, missingness, signal quality, anatomical-site effects, and leakage-aware internal modelling.
 
-The work is methodological and exploratory. It does not aim to provide a validated diagnostic tool. Instead, it builds a reproducible analytical framework to investigate whether mechanical information extracted from torsional wave elastography signals may be useful as a candidate source of non-invasive biomarkers in a cardiometabolic context.
+The work is methodological and exploratory. It does not aim to provide a validated diagnostic tool or a clinically deployable prediction system. Instead, it builds a reproducible analytical framework to investigate whether information extracted from TWE signals may provide useful candidate descriptors of superficial tissue behaviour in a cardiometabolic context.
 
 ## Project context
 
-Metabolic diseases such as obesity, type 2 diabetes and metabolic syndrome are usually evaluated through clinical, anthropometric and biochemical markers. These markers are essential, but they do not directly describe the mechanical behaviour of superficial tissues.
+Metabolic diseases such as obesity, type 2 diabetes and metabolic syndrome are usually evaluated through clinical, anthropometric and biochemical markers. These markers are essential for clinical characterisation, but they do not directly describe the mechanical behaviour of superficial tissues.
 
-Subcutaneous adipose tissue is biologically active and can undergo structural and functional changes in obesity and cardiometabolic disease, including inflammation, extracellular matrix remodelling and fibrosis. These changes may affect tissue mechanics. For this reason, the project explores whether torsional wave elastography can provide additional information about tissue status beyond conventional clinical variables.
+Adipose tissue and adjacent superficial structures can undergo structural and functional changes in obesity and cardiometabolic disease, including inflammation, extracellular matrix remodelling, fibrosis and glycation-related alterations. These processes may affect tissue mechanics. For this reason, the project explores whether TWE can provide complementary information about superficial tissue state beyond conventional clinical variables.
 
-Torsional wave elastography is especially relevant for this purpose because it allows the recorded wave response to be analysed at signal level. Instead of reducing the acquisition immediately to a single scalar stiffness value, the workflow preserves frequency-dependent information and waveform morphology. This makes it possible to study mechanical and viscoelastic descriptors in a more detailed and interpretable way.
+TWE is especially relevant for this purpose because it allows the recorded wave response to be analysed at signal level. Rather than reducing the acquisition immediately to a single scalar stiffness estimate, the workflow preserves frequency-dependent information and waveform morphology. This makes it possible to examine candidate mechanical, viscoelastic and signal-derived descriptors in a more detailed and interpretable way.
 
 ## Main objective
 
-The main objective of this repository is to document the computational workflow used to analyse torsional wave elastography data in relation to cardiometabolic variables.
+The main objective of this repository is to document the computational workflow used to analyse TWE data in relation to cardiometabolic variables.
 
-The analysis aims to
+The analysis aims to:
 
-- organise raw elastography signal files into a harmonised structure
-- preserve frequency-resolved waveform information
-- link elastography recordings with acquisition metadata
-- integrate mechanical descriptors with clinical and anthropometric variables
-- assess signal quality and acquisition consistency
-- derive candidate mechanical and viscoelastic descriptors
-- study missing data patterns in physical and viscosity-related variables
-- explore protocol-dependent and anatomical-site-dependent variability
-- evaluate associations with cardiometabolic endpoints
-- compare interpretable statistical and machine-learning formulations
-- document methodological limitations and future lines of work
+- organise raw elastography signal files into a harmonised structure;
+- preserve frequency-resolved waveform information;
+- link elastography recordings with acquisition metadata and study timepoints;
+- integrate mechanical descriptors with clinical and anthropometric variables;
+- assess signal quality and acquisition consistency;
+- derive candidate mechanical, viscoelastic and signal-derived descriptors;
+- characterise missingness and instability in selected physical variables;
+- explore protocol-dependent and anatomical-site-dependent variability;
+- evaluate exploratory associations with cardiometabolic endpoints;
+- compare interpretable statistical, classical machine-learning and raw-waveform modelling approaches;
+- apply participant-separated internal evaluation procedures when predictive models are trained;
+- interpret deep-learning results as exploratory internal comparisons rather than as definitive clinical validation;
+- document methodological limitations and future lines of work.
 
 ## Scientific scope
 
-The project is centred on the methodological question of how torsional wave elastography data should be processed, structured and analysed before making any clinical interpretation.
+The project is centred on the methodological question of how TWE data should be processed, structured and analysed before making any clinical interpretation.
 
-The repository therefore prioritises transparency, traceability and interpretability over the search for highly optimised predictive models. This is important because the dataset contains repeated measurements, different acquisition protocols, multiple anatomical sites and heterogeneous signal quality. Under these conditions, strong predictive performance can be misleading if it is not supported by careful data harmonisation, quality control and leakage-aware validation.
+The repository therefore prioritises transparency, traceability and interpretability over the search for highly optimised predictive models. This is important because the dataset contains repeated measurements, different acquisition protocol branches, multiple anatomical sites and heterogeneous signal-quality characteristics. Under these conditions, apparently strong predictive performance can be misleading if it is not supported by careful data harmonisation, quality control and participant-separated validation.
+
+The analyses presented in this repository should therefore be understood as exploratory and hypothesis-generating. Their purpose is to identify potentially informative signal representations and protocol-site-frequency configurations that may justify future investigation under stricter validation designs.
 
 ## Data and study design
 
-The analysis is based on an existing torsional wave elastography dataset acquired within a broader cardiometabolic research framework.
+The analysis is based on an existing TWE dataset acquired within the TEMPUS cardiometabolic research framework.
 
-The available information includes
+The available information includes:
 
-- raw torsional wave elastography signal files
-- acquisition metadata
-- protocol information
-- anatomical-site information
-- repeated measurements within subject and site
-- derived physical and viscoelastic variables
-- clinical and anthropometric variables
-- cardiometabolic risk-factor variables
+- raw torsional wave elastography signal files;
+- acquisition metadata;
+- protocol information;
+- anatomical-site information;
+- repeated measurements within participants and sites;
+- reconstructed physical and viscoelastic variables;
+- clinical and anthropometric variables;
+- cardiometabolic risk-factor variables.
 
-The analytical unit is constructed at subject, timepoint and anatomical-site level, while preserving acquisition-level provenance whenever possible.
+The principal analytical unit is constructed at participant, protocol, timepoint and anatomical-site level after aggregation of repeated acquisitions. Acquisition-level provenance is nevertheless preserved for quality-control procedures, waveform inspection and frequency-wise exploratory analyses.
 
-The original dataset includes measurements from different anatomical regions such as abdomen, arm and leg. The workflow also distinguishes between old-code and new-code acquisition branches, because protocol differences may influence signal structure, frequency coverage, repeated-measurement patterns and downstream modelling results.
+The original dataset includes measurements acquired from several anatomical regions, including:
+
+- abdomen;
+- arm;
+- leg.
+
+The workflow distinguishes between `old-code` and `new-code` protocol branches because these structures differ in frequency coverage, repeated-measurement organisation, signal characteristics and availability of reconstructed physical variables. Protocol version is therefore treated as a central methodological factor rather than as a negligible technical detail.
 
 ## Analytical strategy
 
 The project follows a signal-level analytical strategy.
 
-Raw signal files are parsed and converted into structured acquisition-level records. Each acquisition is described by patient identifiers, protocol version, anatomical site, measurement index, source filename, acquisition date and available frequency channels.
+Raw signal files are parsed and converted into structured acquisition-level records. Each acquisition is described by participant identifiers, protocol version, anatomical site, measurement index, source filename, acquisition information and the available frequency channels.
 
-Frequency channels are not forced into a single sparse table at the beginning of the workflow. Instead, each acquisition preserves its frequency-resolved signal arrays, while long-format summaries are generated when needed for downstream analysis.
+Frequency channels are not forced into a single sparse table at the beginning of the workflow. Instead, each acquisition preserves its frequency-resolved signal arrays, while lighter long-format or aggregated representations are generated when required for descriptive analysis, statistical testing or modelling.
 
-This design allows the analysis to remain flexible across protocols with different frequency grids and different numbers of repeated acquisitions.
+This design allows the workflow to remain flexible across protocol branches with different frequency grids and different repeated-acquisition structures, while preserving the provenance of the original signals.
 
 ## Main workflow
 
-The computational workflow is organised into several stages.
+The computational workflow is organised into thirteen main stages.
 
 ### 1. Signal ingestion and parsing
 
-Raw torsional wave elastography files are read and parsed according to their filename structure.
+Raw TWE files are read and parsed according to their filename and protocol structure.
 
-The workflow extracts
+The workflow extracts:
 
-- protocol version
-- local and global patient identifiers
-- anatomical site code
-- measurement index within site
-- acquisition timestamp
-- source file information
-- available frequencies
-- signal arrays for each frequency
+- protocol version;
+- local and global participant identifiers;
+- anatomical-site code;
+- measurement index within site;
+- acquisition information;
+- source file information;
+- available frequencies;
+- signal arrays for each frequency.
 
 ### 2. Metadata harmonisation
 
 Elastography metadata are standardised and linked to the signal-level records.
 
-This step is used to assign
+This stage is used to assign or harmonise:
 
-- hospital patient identifiers
-- study timepoints
-- protocol-specific information
-- acquisition-level provenance
+- hospital participant identifiers;
+- study timepoints;
+- protocol-specific information;
+- acquisition-level provenance;
+- consistent site and variable naming conventions.
 
 The harmonisation step is designed to maintain traceability between raw files, metadata and the final analytical tables.
 
 ### 3. Clinical data integration
 
-Clinical and anthropometric variables are harmonised into a long-format structure and merged with the elastography records.
+Clinical and anthropometric variables are harmonised into a longitudinal structure and merged with the elastography records.
 
-The clinical variables used in the analysis include cardiometabolic markers such as
+The clinical variables incorporated into the analytical workflow include cardiometabolic measurements such as:
 
-- waist circumference
-- triglycerides
-- HDL cholesterol
-- systolic blood pressure
-- diastolic blood pressure
-- glucose
-- age
-- sex
+- waist circumference;
+- triglycerides;
+- HDL cholesterol;
+- systolic blood pressure;
+- diastolic blood pressure;
+- glucose;
+- age;
+- sex.
 
-Derived cardiometabolic flags are then created from these variables.
+These variables provide the clinical and biological context required for the interpretation of the TWE-derived descriptors.
 
 ### 4. Cardiometabolic endpoint construction
 
-The workflow defines binary and composite cardiometabolic endpoints.
+The workflow defines individual and composite cardiometabolic endpoints.
 
-These include individual risk-factor indicators such as
+Individual binary indicators include:
 
-- abdominal obesity
-- high triglycerides
-- low HDL cholesterol
-- hypertension
-- high glucose
+- abdominal obesity;
+- high triglycerides;
+- low HDL cholesterol;
+- hypertension;
+- high glucose.
 
-A composite metabolic syndrome endpoint is also constructed from the combination of these criteria.
+A composite metabolic-syndrome endpoint is also constructed from the combination of these criteria.
+
+The analyses later compare the behaviour of broad syndrome-level endpoints with more specific glucose-related outcomes.
 
 ### 5. Signal-quality assessment
 
-Signal quality is evaluated through acquisition-level and block-level metrics.
+Signal quality is evaluated through acquisition-level and block-level descriptors.
 
-The quality-control strategy considers
+The quality-control strategy considers:
 
-- number of available frequency channels
-- waveform amplitude
-- RMS signal magnitude
-- peak-to-peak amplitude
-- drift-related indicators
-- roughness-related indicators
-- similarity to patient-site-timepoint reference waveforms
-- correlation with repeated acquisitions
-- normalised error with respect to block-level references
+- number of available frequency channels;
+- waveform amplitude;
+- RMS signal magnitude;
+- peak-to-peak amplitude;
+- drift-related indicators;
+- roughness-related indicators;
+- similarity to participant-site-timepoint reference waveforms;
+- correlation with repeated acquisitions;
+- normalised error with respect to block-level references.
 
-The goal is not to remove large amounts of data aggressively, but to identify clearly problematic acquisitions while preserving borderline cases for sensitivity analysis.
+The aim is not to remove large amounts of data aggressively, but to identify clearly problematic acquisitions while preserving borderline observations for cautious interpretation and sensitivity-oriented analyses.
 
 ### 6. Conservative filtering
 
-Acquisitions are classified into three categories.
+Acquisitions are classified into three categories:
 
-- `keep`
-- `review`
-- `exclude`
+- `keep`;
+- `review`;
+- `exclude`.
 
-Only acquisitions with clear structural problems or multiple adverse quality indicators are excluded automatically. This conservative approach allows the impact of quality control on sample size and dataset balance to be quantified before statistical analysis and modelling.
+Only acquisitions with clear structural problems or sufficiently adverse quality indicators are excluded automatically. This conservative strategy makes it possible to quantify the impact of quality control on sample size, protocol distribution and downstream analytical structure before proceeding to statistical analysis and modelling.
 
 ### 7. Feature construction
 
-The workflow combines several types of features.
+The workflow combines several types of features:
 
-These include
+- physics-derived mechanical variables;
+- viscosity-related and viscoelastic descriptors;
+- signal-derived morphology summaries;
+- quality-control descriptors;
+- frequency-specific waveform summaries;
+- clinical and anthropometric variables;
+- binary cardiometabolic flags.
 
-- physics-derived mechanical variables
-- viscoelastic descriptors
-- signal-derived morphology summaries
-- quality-control descriptors
-- frequency-specific waveform summaries
-- clinical and anthropometric variables
-- binary cardiometabolic flags
+Particular attention is given to wave-speed-related descriptors, viscosity-related descriptors, waveform amplitude measures, RMS summaries and their associated variability or uncertainty measures.
 
-Particular attention is given to variables such as wave-speed-related descriptors, viscosity-related descriptors and their associated uncertainty or variability measures.
+These variables are treated as candidate analytical descriptors rather than as clinically validated biomarkers.
 
-### 8. Missing data analysis
+### 8. Missing-data characterisation
 
-Missing data are treated as an important methodological result rather than only as a technical inconvenience.
+Missingness is treated as an important methodological result rather than only as a technical inconvenience.
 
-The analysis examines whether missingness affects specific physical variables, especially viscosity-related and derived mechanical parameters. This is relevant because non-random missingness may indicate that some descriptors are less robust under certain acquisition conditions, protocols, anatomical sites or signal-quality regimes.
+The analysis examines whether missing or unstable values affect specific reconstructed physical variables, especially viscosity-related and other derived mechanical quantities. This is relevant because non-random missingness may indicate that some descriptors are less robust under particular protocol branches, anatomical sites or signal-quality regimes.
 
-The repository therefore supports the documentation of
+The repository documents:
 
-- which variables are more complete
-- which variables are more unstable
-- whether missingness differs across protocols
-- whether missingness differs across anatomical sites
-- how missingness affects modelling decisions
-- which variables should be interpreted cautiously
+- which variables are more complete;
+- which variables show greater instability;
+- whether missingness differs across protocol branches;
+- whether missingness differs across anatomical sites;
+- how missingness influences analytical decisions;
+- which descriptors require cautious interpretation.
 
 ### 9. Exploratory multivariate analysis
 
 Exploratory multivariate methods are used to study the internal structure of the mechanical and signal-derived variables.
 
-These analyses include
+These analyses include:
 
-- descriptive summaries
-- correlation analysis
-- principal component analysis
-- clustering
-- protocol-aware visualisation
-- site-aware visualisation
-- comparison of cardiometabolic groups
+- descriptive summaries;
+- correlation analysis;
+- principal component analysis;
+- clustering;
+- protocol-aware visualisation;
+- site-aware visualisation;
+- comparison with cardiometabolic groupings.
 
-The clustering analysis is interpreted cautiously because observed structure may reflect acquisition protocol, anatomical site or measurement conditions, not only biological variation.
+The clustering analysis is interpreted cautiously because observed structure may reflect acquisition protocol, anatomical site, signal regime or measurement conditions rather than biological variation alone.
 
 ### 10. Protocol-aware analysis
 
-The repository explicitly considers differences between acquisition protocols.
+The repository explicitly considers differences between acquisition protocol branches.
 
-This is important because protocol effects may influence
+Protocol effects may influence:
 
-- available frequency channels
-- number of repeated measurements
-- signal amplitude
-- waveform morphology
-- physical descriptor availability
-- missing data patterns
-- apparent clustering structure
-- model performance
+- available frequency channels;
+- number of repeated measurements;
+- signal amplitude;
+- waveform morphology;
+- reconstructed physical-variable availability;
+- missingness patterns;
+- apparent clustering structure;
+- model performance.
 
-For this reason, several analyses are performed separately by protocol or are interpreted with protocol as a central methodological factor.
+For this reason, several analyses are conducted separately by protocol or are interpreted with protocol version as a central methodological factor.
 
-### 11. Frequency-wise analysis
+### 11. Frequency-wise exploratory analysis
 
 Frequency-resolved analysis is one of the main motivations of the project.
 
-Instead of collapsing all signal information into a single global descriptor, the workflow studies whether specific frequencies, anatomical sites or protocol-site-frequency combinations show stronger relationships with cardiometabolic variables.
+Rather than collapsing all signal information into a single global descriptor, the workflow studies whether specific frequencies, anatomical sites or protocol-site-frequency combinations show stronger relationships with cardiometabolic variables.
 
-This is particularly relevant for glucose-related analyses, where some frequency-specific waveform summaries may provide more informative patterns than broad composite endpoints.
+This approach is particularly relevant for glucose-related analyses, where selected frequency-specific waveform summaries showed more coherent exploratory patterns than the broader metabolic-syndrome endpoint.
+
+Because the frequency-wise screening analyses are performed at acquisition level, repeated measurements from the same participant may contribute correlated observations. Therefore, the corresponding association statistics are interpreted as exploratory indicators for identifying promising protocol-site-frequency patterns rather than as confirmatory evidence of independent associations.
 
 ### 12. Predictive modelling
 
 The modelling stage compares several analytical formulations.
 
-The project includes classical and exploratory models such as
+The project includes classical and exploratory approaches such as:
 
-- logistic regression
-- random forests
-- protocol-stratified models
-- feature-block comparisons
-- targeted site-frequency models
-- raw-waveform temporal models
-- temporal convolutional network approaches
+- logistic regression;
+- random forests;
+- protocol-stratified models;
+- feature-block comparisons;
+- targeted site-frequency models;
+- raw-waveform convolutional neural networks;
+- temporal convolutional network approaches.
 
-The aim is not only to maximise performance, but to compare whether different model families provide stable, interpretable and methodologically coherent results.
+The aim is not only to maximise predictive performance, but to examine whether different signal representations and model families provide stable, interpretable and methodologically coherent results.
+
+The deep-learning stage is exploratory. Candidate raw-waveform and temporal configurations were compared using internal test-partition results in order to identify promising signal representations. Therefore, the strongest observed temporal convolutional network configuration should be interpreted as a hypothesis-generating candidate for future validation rather than as a definitively validated predictive model.
 
 ### 13. Validation and leakage control
 
 The workflow gives special attention to internal validation.
 
-Because repeated acquisitions may exist for the same subject, validation must avoid information leakage between training and testing partitions. Subject-level separation is therefore important when evaluating out-of-subject generalisation.
+Because repeated acquisitions exist for the same participant, evaluation procedures must avoid information leakage between training and evaluation partitions. Participant-level separation is therefore essential when assessing out-of-participant generalisation.
 
-The repository documents validation decisions so that reported performance is not inflated by repeated measurements, duplicated information or preprocessing steps that use information from the full dataset before splitting.
+The repository documents validation decisions so that reported performance is not inflated by repeated measurements, duplicated information or preprocessing steps that use information from the full dataset before splitting. In the deep-learning experiments, participant-level separation was preserved between training, validation and internal test partitions.
+
+However, candidate raw-waveform and temporal configurations were explored using internal test-partition results. Consequently, their performance estimates are interpreted as exploratory internal comparisons rather than as a definitive independent assessment of generalisation. A confirmatory assessment would require a prospectively reserved final test cohort, nested validation or external validation data.
 
 ## Repository structure
 
 ```text
-MetaElasto/
+MetabolicElastography/
 ├── README.md
 ├── Code_Report.pdf
 └── notebooks/
@@ -274,41 +293,41 @@ MetaElasto/
 
 ### `README.md`
 
-Provides a general description of the project, its methodological scope, the organisation of the repository, data availability restrictions and reproducibility notes.
+Provides a general description of the project, its methodological scope, the organisation of the repository, data-availability restrictions, reproducibility considerations and main limitations.
 
 ### `Code_Report.pdf`
 
 Contains a static exported version of the computational workflow.
 
-This file is included as supplementary documentation for review purposes. It provides a complete view of the code and analytical process in PDF format, while the notebooks in the `notebooks/` folder provide a more navigable version divided into thematic blocks.
+This file is included as supplementary documentation for review purposes. It provides an overview of the code and analytical process in PDF format, while the notebooks in the `notebooks/` folder provide a more navigable version divided into thematic analytical blocks.
 
 ### `notebooks/`
 
-Contains the notebook-based implementation of the analytical workflow.
+Contains the notebook-based documentation and implementation of the analytical workflow.
 
-The original analysis was developed as a single notebook and then divided into thematic notebooks to improve readability, traceability and reviewability. Each notebook corresponds to one methodological block of the thesis. The complete notebook is also preserved to show the full analytical workflow in a single file.
+The original analysis was developed as a complete notebook and was subsequently divided into thematic notebooks to improve readability, traceability and reviewability. Each notebook corresponds to one principal methodological block of the thesis. The complete notebook is also preserved as a reference representation of the full computational workflow.
 
 #### `00_full_analysis.ipynb`
 
 Contains the complete analytical workflow.
 
-This notebook provides the full sequence of the project, from data loading and harmonisation to quality control, statistical analysis, machine learning and deep-learning experiments. It is kept as a transparent record of the full computational process.
+This notebook records the full sequence of the project, from data loading and harmonisation to quality control, statistical analysis, classical machine learning and exploratory deep-learning experiments. It is preserved as a transparent reference of the complete computational process.
 
 #### `01_preprocessing.ipynb`
 
 Contains the preprocessing and data-harmonisation workflow.
 
-This notebook reads and organises the raw torsional wave elastography signal files, parses old-code and new-code acquisition formats, extracts metadata from filenames, assigns patient and timepoint information, and links signal-level records with elastograph metadata and clinical tables.
+This notebook reads and organises the raw TWE signal files, parses the `old-code` and `new-code` acquisition formats, extracts metadata from filenames, assigns participant and timepoint information, and links signal-level records with elastograph metadata and clinical tables.
 
-The main output of this block is the harmonised acquisition-level dataset used in the rest of the analysis.
+The main output of this block is the harmonised acquisition-level dataset used in later stages of the analysis.
 
 #### `02_descriptive_audit.ipynb`
 
 Contains the descriptive audit of the harmonised dataset.
 
-This notebook summarises the structure of the data by protocol, patient, timepoint and anatomical site. It also evaluates frequency coverage, acquisition counts, repeated-measurement structure and basic signal properties before applying any exclusion criteria.
+This notebook summarises the structure of the data by protocol, participant, timepoint and anatomical site. It also evaluates frequency coverage, acquisition counts, repeated-measurement structure and basic signal properties before applying exclusion criteria.
 
-The purpose of this block is to understand the dataset structure and identify potential inconsistencies before formal quality control.
+The purpose of this block is to understand the dataset architecture and identify relevant structural characteristics before formal quality control and downstream interpretation.
 
 #### `03_signal_quality_control.ipynb`
 
@@ -316,105 +335,97 @@ Contains the signal-quality assessment and conservative filtering strategy.
 
 This notebook computes acquisition-level quality metrics from the frequency-resolved waveforms and classifies acquisitions into `keep`, `review` and `exclude` categories.
 
-The quality-control strategy is intentionally conservative. Its goal is to identify clearly problematic acquisitions while preserving borderline cases for later sensitivity analysis.
+The quality-control strategy is intentionally conservative. Its aim is to identify clearly problematic acquisitions while preserving borderline cases and retaining most of the original analytical structure.
 
 #### `04_statistical_analysis.ipynb`
 
 Contains the main statistical and exploratory analyses.
 
-This notebook studies the distribution of mechanical, signal-derived and clinical variables. It includes descriptive statistics, group comparisons, correlation analyses, missing-data exploration, protocol-aware summaries and exploratory multivariate analyses such as PCA and clustering.
+This notebook examines the distribution of mechanical, signal-derived and clinical variables. It includes descriptive statistics, group comparisons, correlation analyses, missing-data exploration, protocol-aware summaries, PCA, clustering and frequency-wise exploratory analyses.
 
-The objective of this block is to evaluate whether the extracted mechanical descriptors show interpretable patterns in relation to anatomical site, protocol and cardiometabolic variables.
+The objective of this block is to evaluate whether the extracted descriptors show interpretable patterns in relation to anatomical site, protocol structure and cardiometabolic variables, while avoiding overinterpretation of exploratory findings.
 
 #### `05_machine_learning.ipynb`
 
 Contains the classical machine-learning analyses.
 
-This notebook compares interpretable supervised models using different feature blocks and target definitions. The analysis focuses on internal validation, protocol-aware modelling, performance comparison and the stability of results.
+This notebook compares interpretable supervised models using different feature blocks, protocol branches and target definitions. The analysis focuses on internal validation, protocol-aware modelling, performance comparison and stability of results.
 
-The aim is not only to maximise predictive performance, but to assess whether the available descriptors provide robust and interpretable information for cardiometabolic classification tasks.
+The objective is not to produce a clinically validated classifier, but to assess whether the available descriptors carry useful exploratory information for selected cardiometabolic outcomes.
 
 #### `06_deep_learning.ipynb`
 
 Contains exploratory deep-learning analyses based on waveform information.
 
-This notebook evaluates whether raw or minimally processed torsional wave elastography signals contain useful temporal information that may not be fully captured by handcrafted descriptors.
+This notebook evaluates whether raw or minimally processed TWE signals contain temporal information that may not be fully captured by handcrafted descriptors. It includes single-frequency waveform models, multi-frequency experiments and temporal convolutional network analyses.
 
-These models are treated as exploratory and are interpreted cautiously, especially because of sample-size limitations, repeated measurements and the need to avoid information leakage.
+Participant-level separation is preserved during evaluation. However, because different exploratory deep-learning configurations were compared using internal test-partition results, the reported performances are intended for exploratory model comparison and not as definitive independent validation.
 
 ## Data availability
 
 The original biomedical dataset is not publicly available.
 
-The data are excluded from this repository because they may contain sensitive clinical or research information. Full reproduction of the analyses requires authorised access to the protected dataset.
+The data are excluded from this repository because they contain protected clinical and research information. Full reproduction of the analyses requires authorised access to the original dataset and the corresponding local configuration of input paths.
 
-The repository is intended to document the analytical workflow without exposing confidential information.
+The repository is intended to document the analytical workflow without exposing confidential or protected information.
 
-Where possible, the notebooks preserve the methodological structure of the workflow so that the code can be inspected and understood even when the protected dataset is not available.
+Where possible, the notebooks preserve the methodological structure of the workflow so that the code, decisions and analytical logic can be inspected and understood even when the protected dataset is not available.
 
 ## Reproducibility
 
-The notebooks are provided for methodological transparency.
+The notebooks are provided for methodological transparency and code inspection.
 
-Some parts of the workflow may not run without access to the original protected dataset. However, the repository documents the main analytical decisions, preprocessing steps, quality-control procedures, statistical analyses and modelling comparisons used in the thesis.
+Some parts of the workflow cannot be executed without access to the original protected dataset. Nevertheless, the repository documents the main analytical decisions, preprocessing steps, quality-control procedures, statistical analyses, modelling comparisons and evaluation principles used in the thesis.
 
-The workflow is designed to be reproducible under the same data-access conditions.
+The workflow is intended to be reproducible under equivalent authorised data-access conditions and with appropriate configuration of the original input paths.
 
-## Current status
+## Repository status
 
-This repository is under active development.
+This repository accompanies the final version of the Master's Thesis and is provided for methodological transparency and code inspection.
 
-The current priorities are
-
-- cleaning the notebooks
-- removing local paths and private information
-- checking that no sensitive data are uploaded
-- improving the documentation of each analytical block
-- adding a complete `requirements.txt` file if needed
-- aligning the repository with the final version of the thesis
+The notebook organisation reflects the analytical workflow described in the thesis. Protected biomedical data are not included, and full execution requires authorised access to the original dataset and local configuration of the corresponding input paths.
 
 ## Requirements
 
 The project was developed in Python using a notebook-based workflow.
 
-Core dependencies include
+Core dependencies include:
 
 ```text
 numpy
 pandas
 scipy
+statsmodels
 scikit-learn
 matplotlib
-seaborn
+tensorflow
 jupyter
 ```
 
-Additional dependencies may be required for specific modelling steps, deep-learning experiments or notebook execution.
-
-A complete `requirements.txt` file may be added to document the final computational environment.
+Additional dependencies may be required depending on the local notebook environment and the specific execution path used.
 
 ## How to use this repository
 
-Clone the repository.
+Clone the repository:
 
 ```bash
-git clone https://github.com/<username>/MetaElasto.git
-cd MetaElasto
+git clone https://github.com/antoniignasi/MetabolicElastography.git
+cd MetabolicElastography
 ```
 
-Open the notebook folder.
+Open the notebook directory:
 
 ```bash
 cd notebooks
 ```
 
-Open the complete workflow.
+Open the complete workflow:
 
 ```bash
 jupyter notebook 00_full_analysis.ipynb
 ```
 
-Alternatively, open each analytical block separately.
+Alternatively, open each analytical block separately:
 
 ```bash
 jupyter notebook 01_preprocessing.ipynb
@@ -425,31 +436,33 @@ jupyter notebook 05_machine_learning.ipynb
 jupyter notebook 06_deep_learning.ipynb
 ```
 
-Full execution requires access to the protected dataset and the correct local configuration of input paths.
+Full execution requires access to the protected dataset and the correct local configuration of the corresponding input paths.
 
 ## Methodological limitations
 
 The project should be interpreted as an exploratory and methodological analysis.
 
-Important limitations include
+Important limitations include:
 
-- absence of public access to the original dataset
-- heterogeneous acquisition protocols
-- repeated measurements within subjects and sites
-- possible protocol-induced structure in clustering
-- missing data in some physical and viscosity-related variables
-- limited effective sample size for some protocol-site-target combinations
-- internal validation only
-- absence of external validation
-- exploratory nature of the predictive modelling results
+- absence of public access to the original dataset;
+- heterogeneous acquisition protocol branches;
+- repeated measurements within participants and anatomical sites;
+- possible protocol-induced structure in clustering and multivariate analyses;
+- missingness and instability in some physical and viscosity-related variables;
+- acquisition-level frequency-wise screening with potentially correlated repeated observations;
+- limited effective sample size for some protocol-site-target combinations;
+- exploratory internal validation only;
+- use of internal test-partition results during deep-learning model comparison;
+- absence of independent external or prospectively reserved final validation;
+- exploratory nature of the predictive modelling results.
 
-These limitations are part of the scientific interpretation of the work and are documented to avoid overstating the clinical meaning of the results.
+These limitations form part of the scientific interpretation of the work and are documented explicitly in order to avoid overstating the clinical meaning of the results.
 
 ## Main contribution
 
-The main contribution of MetaElasto is not a final diagnostic model, but a transparent computational framework for analysing torsional wave elastography data in a cardiometabolic setting.
+The main contribution of MetabolicElastography is not a final diagnostic model, but a transparent computational framework for analysing TWE data in a cardiometabolic setting.
 
-The repository supports the thesis by documenting how raw signal files are transformed into structured analytical data, how mechanical and clinical variables are linked, how quality control is performed, how protocol effects are considered and how exploratory statistical and modelling analyses are evaluated.
+The repository supports the thesis by documenting how raw signal files are transformed into structured analytical data, how mechanical and clinical variables are linked, how signal quality is evaluated, how protocol effects are considered, and how exploratory statistical and modelling analyses are interpreted under explicit methodological limitations.
 
 ## Author
 
@@ -465,4 +478,4 @@ This repository is intended for academic documentation and methodological transp
 
 The code is shared for evaluation and research-documentation purposes. It does not include raw clinical data, identifiable information or protected research data.
 
-The analyses presented here should not be interpreted as a validated clinical diagnostic system.
+The analyses presented here should not be interpreted as a validated clinical diagnostic system or as an independently validated predictive model.
